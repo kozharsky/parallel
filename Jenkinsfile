@@ -14,29 +14,13 @@ def sendMail(NICKNAME) {
      stage('Run Tests') {
             parallel {
                 stage('Test On Windows') {
-                    agent {
-                        label "windows"
-                    }
                     steps {
                         sh "echo 'message master' > task_master.log && sleep 10"
                     }
-                    post {
-                        always {
-                            sh "echo 'first done'"
-                        }
-                    }
                 }
                 stage('Test On Linux') {
-                    agent {
-                        label "linux"
-                    }
                     steps {
                         sh "echo 'message slave' > task_slave.log && sleep 10"
-                    }
-                    post {
-                        always {
-                            sh "echo 'second done'"
-                        }
                     }
                 }
             }
