@@ -11,25 +11,13 @@ def sendMail(NICKNAME) {
  
  node('ec2Slave') {
       stage ('Job Master') {
-            sh """
-            for i in {1..10}
-            do
-                  do_something_here
-                  echo $(date) > task1.log
-            done
-               """
+            sh "echo $(date) > task1.log"
         }
- 
  parallel Parallels: {
             stage ('Job Slave') {
-            sh """
-            for i in {1..10}
-            do
-                  do_something_here
-                  echo $(date) > task1.log
-            done
-               """
+            sh "echo $(date) > task1.log"
             }
         }
  }
+
 sendMail(NICKNAME)
