@@ -10,12 +10,35 @@ def sendMail(NICKNAME) {
  }
  
  node('ec2Slave') {
-      stage ('Job Master') {
-          sh "echo 'message master' > task_master.log && sleep 10"
-        }
- parallel Parallels: {
-            stage ('Job Slave') {
-                sh "echo 'message slave' > task_slave.log && sleep 10"
+     
+     stage('Run Tests') {
+            parallel {
+                stage('Test On Windows') {
+                    agent {
+                        label "windows"
+                    }
+                    steps {
+                        sh "echo 'message master' > task_master.log && sleep 10"
+                    }
+                    post {
+                        always {
+                            sh "echo 'first done'"
+                        }
+                    }
+                }
+                stage('Test On Linux') {
+                    agent {
+                        label "linux"
+                    }
+                    steps {
+                        sh "echo 'message slave' > task_slave.log && sleep 10"
+                    }
+                    post {
+                        always {
+                            sh "echo 'second done'"
+                        }
+                    }
+                }
             }
         }
  }
