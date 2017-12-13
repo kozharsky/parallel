@@ -9,8 +9,10 @@ def sendMail(NICKNAME) {
     )
  }
  
- node('ec2Slave') {
-     
+
+ pipeline {
+    agent 'ec2Slave'
+    stages {    
      stage('run-parallel-branches') {
   steps {
     parallel(
@@ -22,7 +24,7 @@ def sendMail(NICKNAME) {
       }
     )
   }
+ }
 }
  }
-
 sendMail(NICKNAME)
