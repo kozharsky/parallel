@@ -11,11 +11,11 @@ def sendMail(NICKNAME) {
  
  node('ec2Slave') {
       stage ('Job Master') {
-          sh "echo ${date} > task1.log"
+          sh "echo 'message' > task1.log"
         }
  parallel Parallels: {
             stage ('Job Slave') {
-                sh "echo ${date} > task1.log"
+                sh "echo 'message' > task1.log"
             }
         }
  }
