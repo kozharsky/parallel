@@ -19,7 +19,7 @@ def sendMail(NICKNAME) {
             done
                """
         }
- }
+ 
  parallel Parallels: {
             stage ('Job Slave') {
             sh """
@@ -31,5 +31,5 @@ def sendMail(NICKNAME) {
                """
             }
         }
-
+ }
 sendMail(NICKNAME)
