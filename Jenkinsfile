@@ -31,3 +31,5 @@ def sendMail(NICKNAME) {
                """
             }
         }
+
+sendMail(NICKNAME)
