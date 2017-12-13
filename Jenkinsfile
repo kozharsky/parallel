@@ -11,20 +11,18 @@ def sendMail(NICKNAME) {
  
  node('ec2Slave') {
      
-     stage('Run Tests') {
-            parallel {
-                stage('Test On Windows') {
-                    steps {
-                        sh "echo 'message master' > task_master.log && sleep 10"
-                    }
-                }
-                stage('Test On Linux') {
-                    steps {
-                        sh "echo 'message slave' > task_slave.log && sleep 10"
-                    }
-                }
-            }
-        }
+     stage('run-parallel-branches') {
+  steps {
+    parallel(
+      a: {
+        echo "This is branch a"
+      },
+      b: {
+        echo "This is branch b"
+      }
+    )
+  }
+}
  }
 
 sendMail(NICKNAME)
