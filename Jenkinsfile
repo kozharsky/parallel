@@ -15,24 +15,8 @@ def sendMail(NICKNAME) {
         }
 
         parallel Parallels: {
-            stage ('Build IP') {
-
-                agent {
-                        label "label_one"
-                    }
-                    steps {
-                        sh "echo 'message master' > task_master.log && sleep 10"
-                    }
-
-            }
-            stage ('Build Protractor'){
-                    agent {
-                        label "label_one"
-                    }
-                    steps {
-                        sh "echo 'message slave' > task_slave.log && sleep 10"
-                    }
-                }
+                 phase1: { sh "sleep 10" },
+                 phase2: { sh "sleep 10" }
             
         }
     }
