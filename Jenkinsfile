@@ -10,7 +10,7 @@ def sendMail(NICKNAME) {
   }
   else{ // PR check, send email to PR creator
     emailext (
-      recipientProviders: [[$class: 'CulpritsRecipientProvider']],
+      to: '$ghprbActualCommitAuthorEmail',
       subject: '$PROJECT_NAME - Build # $BUILD_NUMBER - ' + "${env.BUILD_STATUS}",
       body: 'Project: $PROJECT_NAME<br/>Build # $BUILD_NUMBER<br/>Build status: ' + "${env.BUILD_STATUS}" + '<br/>View job results: $BUILD_URL<br/>Console output:<br/>${BUILD_URL}consoleFull'
     )
@@ -80,32 +80,15 @@ node('ec2Slave') {
             sudo docker rm -fv mongo_unit_test_${VERSION}
             """
         }
-        parallel buildIP: {
-            stage ('Build IP') {
-                env.WORKSPACE = pwd()
-                env.HOME = pwd() + "/package"
-                dir('deployments'){
-                    git url: 'git@github.com:solariat/deployments.git', branch: 'master', credentialsId: 'jenkins-key'
-                    sh "chown -R 1000.1000 /var/jenkins_home"
-                    sh "bash build_wheels.sh"
-                }
-                sh """
-                bash scripts/build_jop.sh ${NICKNAME} ${VERSION}
-                chown -R 1000.1000 /var/jenkins_home
-                cp ${HOME}/joppkg/*.tgz /var/www/joppkgs/
-                """
-            }
-        }, buildTestsImage: {
+        parallel buildProtractor: {
             stage ('Build Protractor'){
-                dir('solariat_bottle/src/solariat_bottle'){
-                    sh "sudo docker build -t tango_tests:${VERSION} ."
-                }
+              dir('solariat_bottle/src/solariat_bottle'){
+                  sh "sudo docker build -t tango_tests:${VERSION} ."
+               } 
             }
-        }, buildTangoImage: {
+        }, tangoImageAdded: {
             stage ('Build Tango') {
-            sh """
-            bash scripts/build_docker.sh ${NICKNAME} ${VERSION} ${BRANCH} ${ECR_REPO}/tango
-            """
+            sh "bash scripts/build_docker.sh ${NICKNAME} ${VERSION} ${BRANCH} ${ECR_REPO}/tango"
             }
         }
         stage ('Get Mongo dump'){
@@ -162,30 +145,37 @@ node('ec2Slave') {
             ]
         }
         stage ('Push Tango latest'){
-            if(NICKNAME == 'GSE' || NICKNAME == 'PRR'){
+            if(NICKNAME == 'GSE'){ // not PR check
                 sh """
                 sudo \$(aws ecr get-login --no-include-email --region eu-west-2)
                 sudo docker tag ${ECR_REPO}/tango:${VERSION} ${ECR_REPO}/tango:${BRANCH}
                 sudo docker push ${ECR_REPO}/tango:${BRANCH}
-                if [ ${BRANCH} = "dev" ]; then
-                  sudo docker pull ${ECR_REPO}/tango:latest
-                  sudo docker tag ${ECR_REPO}/tango:latest ${ECR_REPO}/tango:old_latest
-                  sudo docker push ${ECR_REPO}/tango:old_latest
-                  sudo docker rmi -f ${ECR_REPO}/tango:old_latest
-                  sudo docker tag ${ECR_REPO}/tango:${VERSION} ${ECR_REPO}/tango:latest
-                  sudo docker push ${ECR_REPO}/tango:latest
-                fi
+                sudo docker pull ${ECR_REPO}/tango:latest
+                sudo docker tag ${ECR_REPO}/tango:latest ${ECR_REPO}/tango:old_latest
+                sudo docker push ${ECR_REPO}/tango:old_latest
+                sudo docker rmi -f ${ECR_REPO}/tango:old_latest
+                sudo docker tag ${ECR_REPO}/tango:${VERSION} ${ECR_REPO}/tango:latest
+                sudo docker push ${ECR_REPO}/tango:latest
                 """
             }
         }
     } catch(err) {
         env.BUILD_STATUS = 'FAILED'
-        throw(err)
+	throw(err)	    
     } finally {
         stage ('Allure results'){
             allure results: [[path: 'allure-results']]
         }
         stage ('Post build'){
+	   sh """
+	   sudo docker logs tango || true
+	   sudo docker logs workers || true
+	   sudo docker logs fb_producer || true
+	   sudo docker logs fb_consumer || true
+	   sudo odkcer logs tw_consumer || true
+	   sudo docker logs tw_dm_bot || true
+	   sudo docker logs tw_publicstream_bot || true
+	   """
            if(NICKNAME == 'GSE_PR'){
             	sh """
 		echo "PR check - deleting image in ECR with tag ${VERSION}"
