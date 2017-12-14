@@ -15,18 +15,18 @@ def sendMail(NICKNAME) {
             parallel buildOne: {
             stage ('Build One') {
                     sh "echo 'one'"
-                    sh "sleep 10"
+                    sh "sleep 100"
 
             }
         }, buildTwo: {
             stage ('Build Two'){
                     sh "echo 'two'"
-                    sh "sleep 10"
+                    sh "sleep 100"
             }
             }, buildThree: {
             stage ('Build Three'){
                     sh "echo 'three'"
-                    sh "sleep 10"
+                    sh "sleep 100"
 
             }
         }
