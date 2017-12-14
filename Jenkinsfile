@@ -21,15 +21,20 @@ def sendMail(NICKNAME) {
         )
     
 
-            parallel buildIP: {
+            parallel buildOne: {
             stage ('Build One') {
-
+                    sh "echo 'one'"
                     sh "sleep 10"
 
             }
-        }, buildTestsImage: {
+        }, buildTwo: {
             stage ('Build Two'){
+                    sh "echo 'two'"
+                    sh "sleep 10"
 
+            },buildThree: {
+            stage ('Build Three'){
+                    sh "echo 'three'"
                     sh "sleep 10"
 
             }
