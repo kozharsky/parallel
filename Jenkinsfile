@@ -23,15 +23,15 @@ def sendMail(NICKNAME) {
 
             parallel buildIP: {
             stage ('Build One') {
-                    dir('/home/ubuntu'){
+
                     sh "sleep 10"
-                }
+
             }
         }, buildTestsImage: {
             stage ('Build Two'){
-                    dir('/home/ubuntu'){
+
                     sh "sleep 10"
-                }
+
             }
         }
 
