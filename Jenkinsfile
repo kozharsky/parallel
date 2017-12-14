@@ -32,7 +32,7 @@ def sendMail(NICKNAME) {
                     sh "echo 'two'"
                     sh "sleep 10"
 
-            },buildThree: {
+            }, buildThree: {
             stage ('Build Three'){
                     sh "echo 'three'"
                     sh "sleep 10"
