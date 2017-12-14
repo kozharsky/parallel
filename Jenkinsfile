@@ -19,23 +19,22 @@ def sendMail(NICKNAME) {
                  phase2: { sh "sleep 10" }
             
         )
-    }
+    
 
             parallel buildIP: {
-            stage ('Build IP') {
-
-                sh """
-                sleep 10
-                """
+            stage ('Build One') {
+                    dir('/home/ubuntu'){
+                    sh "sleep 10"
+                }
             }
         }, buildTestsImage: {
-            stage ('Build Protractor'){
-
+            stage ('Build Two'){
+                    dir('/home/ubuntu'){
                     sh "sleep 10"
-
+                }
             }
         }
 
- 
+ }
 
 sendMail(NICKNAME)
