@@ -10,10 +10,6 @@ def sendMail(NICKNAME) {
  }
  
  node('ec2Slave') {
-      stage ('Job Master') {
-          sh "echo 'message master' > task_master.log && sleep 10"
-        }
-
     
 
             parallel buildOne: {
