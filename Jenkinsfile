@@ -30,6 +30,9 @@ def sendMail(NICKNAME) {
 
             }
         }
+     stage ('Build Four'){
+                    sh "echo 'four'"
+                    sh "sleep 100"
 
  }
 
