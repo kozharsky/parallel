@@ -14,11 +14,11 @@ def sendMail(NICKNAME) {
           sh "echo 'message master' > task_master.log && sleep 10"
         }
 
-        parallel Parallels: {
+        parallel (
                  phase1: { sh "sleep 10" },
                  phase2: { sh "sleep 10" }
             
-        }
+        )
     }
 
  
