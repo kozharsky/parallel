@@ -9,22 +9,22 @@ def sendMail(NICKNAME) {
     )
  }
  
+ node('ec2Slave') {
+      stage ('Job Master') {
+          sh "echo 'message master' > task_master.log && sleep 10"
+        }
 
- pipeline {
-    agent 'ec2Slave'
-    stages {    
-     stage('run-parallel-branches') {
-  steps {
-    parallel(
-      a: {
-        echo "This is branch a"
-      },
-      b: {
-        echo "This is branch b"
-      }
-    )
-  }
- }
-}
- }
+        parallel Parallels: {
+            stage ('Build one') {
+                    sh "echo 'message master' > task_master.log && sleep 10"
+            }
+            stage ('Build two'){
+                    sh "echo 'message slave' > task_slave.log && sleep 10"
+                }
+            
+        }
+    }
+
+ 
+
 sendMail(NICKNAME)
