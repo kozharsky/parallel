@@ -21,6 +21,21 @@ def sendMail(NICKNAME) {
         )
     }
 
+            parallel buildIP: {
+            stage ('Build IP') {
+
+                sh """
+                sleep 10
+                """
+            }
+        }, buildTestsImage: {
+            stage ('Build Protractor'){
+
+                    sh "sleep 10"
+
+            }
+        }
+
  
 
 sendMail(NICKNAME)
